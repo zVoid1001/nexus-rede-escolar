@@ -55,7 +55,7 @@ export const Route = createFileRoute("/inventario")({
       },
     ],
   }),
-  component: Inventario;
+  component: Inventario,
 });
 
 type Formulario = {
