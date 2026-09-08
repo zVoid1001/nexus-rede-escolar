@@ -123,3 +123,48 @@ export function AvisoDemo() {
 export function Vazio({ mensagem }: { mensagem: string }) {
   return <p className="px-5 py-10 text-center text-sm text-mist">{mensagem}</p>;
 }
+
+export function Campo({
+  rotulo,
+  erro,
+  children,
+}: {
+  rotulo: string;
+  erro?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-xs text-mist">{rotulo}</label>
+      {children}
+      {erro ? <p className="text-xs text-fail">{erro}</p> : null}
+    </div>
+  );
+}
+
+export function Selecao({
+  valor,
+  aoMudar,
+  opcoes,
+  placeholder,
+}: {
+  valor: string;
+  aoMudar: (v: string) => void;
+  opcoes: { valor: string; rotulo: string }[];
+  placeholder: string;
+}) {
+  return (
+    <select
+      value={valor}
+      onChange={(e) => aoMudar(e.target.value)}
+      className="h-9 w-full rounded-md border border-line bg-panel-2 px-3 text-sm text-foreground"
+    >
+      <option value="">{placeholder}</option>
+      {opcoes.map((o) => (
+        <option key={o.valor} value={o.valor}>
+          {o.rotulo}
+        </option>
+      ))}
+    </select>
+  );
+}

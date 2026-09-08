@@ -15,7 +15,7 @@ import {
 } from "@/lib/dados";
 import { proximaIdentificacao } from "@/lib/certificacao";
 import type { PontoRede } from "@/lib/tipos";
-import { PageHeader, Painel, StatusBadge, Vazio } from "@/components/ui-sistema";
+import { Campo, PageHeader, Painel, Selecao, StatusBadge, Vazio } from "@/components/ui-sistema";
 import {
   Dialog,
   DialogContent,
@@ -55,7 +55,7 @@ export const Route = createFileRoute("/inventario")({
       },
     ],
   }),
-  component: Inventario;
+  component: Inventario,
 });
 
 type Formulario = {
@@ -476,47 +476,3 @@ function Inventario() {
   );
 }
 
-export function Campo({
-  rotulo,
-  erro,
-  children,
-}: {
-  rotulo: string;
-  erro?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-mist">{rotulo}</Label>
-      {children}
-      {erro ? <p className="text-xs text-fail">{erro}</p> : null}
-    </div>
-  );
-}
-
-export function Selecao({
-  valor,
-  aoMudar,
-  opcoes,
-  placeholder,
-}: {
-  valor: string;
-  aoMudar: (v: string) => void;
-  opcoes: { valor: string; rotulo: string }[];
-  placeholder: string;
-}) {
-  return (
-    <select
-      value={valor}
-      onChange={(e) => aoMudar(e.target.value)}
-      className="h-9 w-full rounded-md border border-line bg-panel-2 px-3 text-sm text-foreground"
-    >
-      <option value="">{placeholder}</option>
-      {opcoes.map((o) => (
-        <option key={o.valor} value={o.valor}>
-          {o.rotulo}
-        </option>
-      ))}
-    </select>
-  );
-}
