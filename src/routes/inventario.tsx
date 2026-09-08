@@ -15,7 +15,7 @@ import {
 } from "@/lib/dados";
 import { proximaIdentificacao } from "@/lib/certificacao";
 import type { PontoRede } from "@/lib/tipos";
-import { PageHeader, Painel, StatusBadge, Vazio } from "@/components/ui-sistema";
+import { Campo, PageHeader, Painel, Selecao, StatusBadge, Vazio } from "@/components/ui-sistema";
 import {
   Dialog,
   DialogContent,
