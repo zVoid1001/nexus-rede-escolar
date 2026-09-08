@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InventarioRouteImport } from './routes/inventario'
+import { Route as PatchPanelsRouteImport } from './routes/patch-panels'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const InventarioRoute = InventarioRouteImport.update({
   path: '/inventario',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatchPanelsRoute = PatchPanelsRouteImport.update({
+  id: '/patch-panels',
+  path: '/patch-panels',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/inventario': typeof InventarioRoute
+  '/patch-panels': typeof PatchPanelsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/inventario': typeof InventarioRoute
+  '/patch-panels': typeof PatchPanelsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/inventario': typeof InventarioRoute
+  '/patch-panels': typeof PatchPanelsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inventario'
+  fullPaths: '/' | '/inventario' | '/patch-panels'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inventario'
-  id: '__root__' | '/' | '/inventario'
+  to: '/' | '/inventario' | '/patch-panels'
+  id: '__root__' | '/' | '/inventario' | '/patch-panels'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InventarioRoute: typeof InventarioRoute
+  PatchPanelsRoute: typeof PatchPanelsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventarioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patch-panels': {
+      id: '/patch-panels'
+      path: '/patch-panels'
+      fullPath: '/patch-panels'
+      preLoaderRoute: typeof PatchPanelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InventarioRoute: InventarioRoute,
+  PatchPanelsRoute: PatchPanelsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
