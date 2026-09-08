@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as PatchPanelsRouteImport } from './routes/patch-panels'
+import { Route as SwitchesRouteImport } from './routes/switches'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const PatchPanelsRoute = PatchPanelsRouteImport.update({
   path: '/patch-panels',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SwitchesRoute = SwitchesRouteImport.update({
+  id: '/switches',
+  path: '/switches',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
+  '/switches': typeof SwitchesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
+  '/switches': typeof SwitchesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
+  '/switches': typeof SwitchesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inventario' | '/patch-panels'
+  fullPaths: '/' | '/inventario' | '/patch-panels' | '/switches'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inventario' | '/patch-panels'
-  id: '__root__' | '/' | '/inventario' | '/patch-panels'
+  to: '/' | '/inventario' | '/patch-panels' | '/switches'
+  id: '__root__' | '/' | '/inventario' | '/patch-panels' | '/switches'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InventarioRoute: typeof InventarioRoute
   PatchPanelsRoute: typeof PatchPanelsRoute
+  SwitchesRoute: typeof SwitchesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatchPanelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/switches': {
+      id: '/switches'
+      path: '/switches'
+      fullPath: '/switches'
+      preLoaderRoute: typeof SwitchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InventarioRoute: InventarioRoute,
   PatchPanelsRoute: PatchPanelsRoute,
+  SwitchesRoute: SwitchesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
