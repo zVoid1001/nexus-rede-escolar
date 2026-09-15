@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CertificacaoRouteImport } from './routes/certificacao'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EtiquetasRouteImport } from './routes/etiquetas'
+import { Route as HistoricoRouteImport } from './routes/historico'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as PatchPanelsRouteImport } from './routes/patch-panels'
 import { Route as SwitchesRouteImport } from './routes/switches'
@@ -20,9 +23,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CertificacaoRoute = CertificacaoRouteImport.update({
+  id: '/certificacao',
+  path: '/certificacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EtiquetasRoute = EtiquetasRouteImport.update({
   id: '/etiquetas',
   path: '/etiquetas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoricoRoute = HistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventarioRoute = InventarioRouteImport.update({
@@ -43,14 +61,20 @@ const SwitchesRoute = SwitchesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/certificacao': typeof CertificacaoRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/etiquetas': typeof EtiquetasRoute
+  '/historico': typeof HistoricoRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
   '/switches': typeof SwitchesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/certificacao': typeof CertificacaoRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/etiquetas': typeof EtiquetasRoute
+  '/historico': typeof HistoricoRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
   '/switches': typeof SwitchesRoute
@@ -58,20 +82,42 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/certificacao': typeof CertificacaoRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/etiquetas': typeof EtiquetasRoute
+  '/historico': typeof HistoricoRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
   '/switches': typeof SwitchesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/etiquetas' | '/inventario' | '/patch-panels' | '/switches'
+  fullPaths:
+    | '/'
+    | '/certificacao'
+    | '/configuracoes'
+    | '/etiquetas'
+    | '/historico'
+    | '/inventario'
+    | '/patch-panels'
+    | '/switches'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/etiquetas' | '/inventario' | '/patch-panels' | '/switches'
+  to:
+    | '/'
+    | '/certificacao'
+    | '/configuracoes'
+    | '/etiquetas'
+    | '/historico'
+    | '/inventario'
+    | '/patch-panels'
+    | '/switches'
   id:
     | '__root__'
     | '/'
+    | '/certificacao'
+    | '/configuracoes'
     | '/etiquetas'
+    | '/historico'
     | '/inventario'
     | '/patch-panels'
     | '/switches'
@@ -79,7 +125,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CertificacaoRoute: typeof CertificacaoRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
   EtiquetasRoute: typeof EtiquetasRoute
+  HistoricoRoute: typeof HistoricoRoute
   InventarioRoute: typeof InventarioRoute
   PatchPanelsRoute: typeof PatchPanelsRoute
   SwitchesRoute: typeof SwitchesRoute
@@ -94,11 +143,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/certificacao': {
+      id: '/certificacao'
+      path: '/certificacao'
+      fullPath: '/certificacao'
+      preLoaderRoute: typeof CertificacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/etiquetas': {
       id: '/etiquetas'
       path: '/etiquetas'
       fullPath: '/etiquetas'
       preLoaderRoute: typeof EtiquetasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/historico': {
+      id: '/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof HistoricoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventario': {
@@ -127,7 +197,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CertificacaoRoute: CertificacaoRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
   EtiquetasRoute: EtiquetasRoute,
+  HistoricoRoute: HistoricoRoute,
   InventarioRoute: InventarioRoute,
   PatchPanelsRoute: PatchPanelsRoute,
   SwitchesRoute: SwitchesRoute,
