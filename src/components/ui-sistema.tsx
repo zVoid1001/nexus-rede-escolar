@@ -130,7 +130,7 @@ export function Campo({
   children,
 }: {
   rotulo: string;
-  erro?: string;
+  erro?: string | undefined;
   children: ReactNode;
 }) {
   return (
