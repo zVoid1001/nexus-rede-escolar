@@ -1,5 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
+  LogIn,
+  LogOut,
   LayoutDashboard,
   Cable,
   LayoutGrid,
@@ -12,6 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useLimites } from "@/lib/dados";
+import { useSessao, nomeExibicao, sair } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const ITENS = [
@@ -26,6 +29,8 @@ const ITENS = [
 ] as const;
 
 function Conteudo({ aoNavegar }: { aoNavegar?: () => void }) {
+  const navigate = useNavigate();
+  const { usuario } = useSessao();
   const { data: limites } = useLimites();
   const normas = Array.from(
     new Set((limites ?? []).map((l) => l.norma).filter(Boolean) as string[]),
@@ -59,7 +64,35 @@ function Conteudo({ aoNavegar }: { aoNavegar?: () => void }) {
           </Link>
         ))}
       </nav>
-      <div className="mt-auto rounded-lg border border-line bg-panel-2/50 p-4">
+      <div className="mt-auto space-y-3">
+        <div className="rounded-lg border border-line bg-panel-2/50 p-4">
+          {usuario ? (
+            <>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-mist">Conectado</p>
+              <p className="mt-1 truncate text-xs text-foreground">{nomeExibicao(usuario)}</p>
+              <button
+                type="button"
+                onClick={async () => {
+                  await sair();
+                  aoNavegar?.();
+                  navigate({ to: "/auth", replace: true });
+                }}
+                className="mt-3 inline-flex items-center gap-2 text-xs text-mist hover:text-foreground"
+              >
+                <LogOut className="size-3.5" aria-hidden /> Sair
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/auth"
+              onClick={aoNavegar}
+              className="inline-flex items-center gap-2 text-xs font-semibold text-gold hover:underline"
+            >
+              <LogIn className="size-3.5" aria-hidden /> Entrar
+            </Link>
+          )}
+        </div>
+      <div className="rounded-lg border border-line bg-panel-2/50 p-4">
         <p className="text-[10px] uppercase tracking-[0.2em] text-mist">Norma ativa</p>
         <p className="mt-1 font-mono text-xs text-foreground">
           {normas.length ? normas.join(" · ") : "Nenhuma norma cadastrada"}
