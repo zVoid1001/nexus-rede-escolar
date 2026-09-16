@@ -1,5 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
+  LogIn,
+  LogOut,
   LayoutDashboard,
   Cable,
   LayoutGrid,
@@ -12,6 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useLimites } from "@/lib/dados";
+import { useSessao, nomeExibicao, sair } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const ITENS = [
