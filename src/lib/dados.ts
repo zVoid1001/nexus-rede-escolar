@@ -11,7 +11,7 @@ import type {
 } from "./tipos";
 
 async function selecionar<T>(tabela: string, ordem: string, asc = true): Promise<T[]> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from(tabela)
     .select("*")
     .order(ordem, { ascending: asc });

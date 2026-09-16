@@ -84,7 +84,7 @@ export function avaliarTeste(
   if (!medicoes.wire_map) falhas.push("wire_map");
 
   for (const parametro of PARAMETROS_NUMERICOS) {
-    const valor = medicoes[parametro];
+    const valor = medicoes[parametro] as number | null;
     const limite = limites.find((l) => l.parametro === parametro);
     const unidade = limite?.unidade ? ` ${limite.unidade}` : "";
     const medido = valor === null || Number.isNaN(valor) ? "—" : `${valor}${unidade}`;
