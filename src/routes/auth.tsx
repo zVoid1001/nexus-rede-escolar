@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -182,11 +182,6 @@ function Autenticacao() {
         </p>
       </div>
 
-      <p className="mt-6 text-center text-xs text-mist">
-        <Link to="/" className="hover:text-foreground">
-          Ver o dashboard sem entrar
-        </Link>
-      </p>
     </div>
   );
 }

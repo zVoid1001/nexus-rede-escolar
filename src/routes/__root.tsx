@@ -4,12 +4,15 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { useSessao } from "@/lib/auth";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -119,18 +122,42 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { usuario, carregando } = useSessao();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const naTelaLogin = pathname === "/auth";
+
+  useEffect(() => {
+    if (!carregando && !usuario && !naTelaLogin) navigate({ to: "/auth", replace: true });
+  }, [carregando, usuario, naTelaLogin, navigate]);
+
+  let conteudo: ReactNode;
+  if (naTelaLogin) {
+    conteudo = (
+      <main className="flex min-h-screen items-center justify-center px-5 py-8">
+        <Outlet />
+      </main>
+    );
+  } else if (carregando || !usuario) {
+    conteudo = (
+      <div className="flex min-h-screen items-center justify-center text-sm text-mist">
+        Carregando…
+      </div>
+    );
+  } else {
+    conteudo = (
+      <div className="flex flex-col md:flex-row">
+        <AppSidebar />
+        <main className="min-w-0 flex-1 space-y-6 px-5 py-8 md:px-10">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="flex flex-col md:flex-row">
-          <AppSidebar />
-          <main className="min-w-0 flex-1 space-y-6 px-5 py-8 md:px-10">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
-        </div>
-      </div>
+      <div className="min-h-screen bg-background text-foreground">{conteudo}</div>
       <Toaster position="top-right" />
     </QueryClientProvider>
   );
