@@ -101,6 +101,7 @@ function Conteudo({ aoNavegar }: { aoNavegar?: () => void }) {
           Limites configuráveis em Configurações.
         </p>
       </div>
+      </div>
     </>
   );
 }
