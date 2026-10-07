@@ -1,25 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
-import { useSessao } from "@/lib/auth";
-import { Campo } from "@/components/ui-sistema";
+import QRCode from "qrcode";
+import { useSessao, salvarToken } from "@/lib/auth";
+import { statusAcesso, entrarComCodigo } from "@/lib/totp.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Entrar — NEXUS Inventário e Certificação de Rede" },
-      {
-        name: "description",
-        content:
-          "Acesse o NEXUS para gerenciar o inventário de pontos de rede, etiquetas e testes de certificação.",
-      },
+      { name: "description", content: "Acesse o NEXUS com o código do Google Authenticator." },
       { property: "og:title", content: "Entrar — NEXUS" },
-      {
-        property: "og:description",
-        content: "Acesso ao sistema de inventário e certificação de rede.",
-      },
+      { property: "og:description", content: "Acesso ao sistema de inventário e certificação de rede." },
     ],
   }),
   component: Autenticacao,
@@ -28,73 +20,41 @@ export const Route = createFileRoute("/auth")({
 function Autenticacao() {
   const navigate = useNavigate();
   const { sessao, carregando } = useSessao();
-  const [modo, setModo] = useState<"entrar" | "criar">("entrar");
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [codigo, setCodigo] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState("");
+  const [segredo, setSegredo] = useState<string | null>(null);
+  const [qr, setQr] = useState("");
+  const [restante, setRestante] = useState(30);
 
   useEffect(() => {
     if (!carregando && sessao) navigate({ to: "/", replace: true });
   }, [carregando, sessao, navigate]);
 
+  useEffect(() => {
+    statusAcesso().then(async (s) => {
+      if (!s.configurado && s.segredo) {
+        setSegredo(s.segredo);
+        const url = `otpauth://totp/NEXUS:Rede?secret=${s.segredo}&issuer=NEXUS&period=30&digits=6`;
+        setQr(await QRCode.toDataURL(url, { margin: 1, width: 220 }));
+      }
+    });
+    const t = setInterval(() => setRestante(30 - (Math.floor(Date.now() / 1000) % 30)), 500);
+    return () => clearInterval(t);
+  }, []);
+
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || senha.length < 6) {
-      setAviso("Informe um e-mail válido e uma senha com pelo menos 6 caracteres.");
-      return;
-    }
-    setAviso("");
-    setEnviando(true);
+    if (!/^\d{6}$/.test(codigo)) { setAviso("Digite os 6 números do aplicativo."); return; }
+    setAviso(""); setEnviando(true);
     try {
-      if (modo === "criar") {
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password: senha,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { nome: nome.trim() },
-          },
-        });
-        if (error) throw error;
-        if (!data.session) {
-          toast.success("Conta criada. Confirme o e-mail para entrar.");
-          setAviso("Enviamos um link de confirmação para o seu e-mail.");
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: senha,
-        });
-        if (error) throw error;
-        toast.success("Bem-vindo de volta.");
-      }
-    } catch (erro) {
-      const msg = erro instanceof Error ? erro.message : "Não foi possível concluir.";
-      setAviso(
-        msg.includes("Invalid login credentials")
-          ? "E-mail ou senha incorretos."
-          : msg.includes("already registered")
-            ? "Este e-mail já possui conta. Faça login."
-            : msg,
-      );
-    } finally {
-      setEnviando(false);
-    }
-  }
-
-  async function entrarComGoogle() {
-    setAviso("");
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      setAviso("Não foi possível entrar com a conta Google.");
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/", replace: true });
+      const r = await entrarComCodigo({ data: { codigo } });
+      if (!r.ok || !r.token) { setAviso("Código incorreto ou expirado. Use o código atual do aplicativo."); return; }
+      salvarToken(r.token);
+      toast.success("Acesso liberado.");
+    } catch {
+      setAviso("Não foi possível validar o código.");
+    } finally { setEnviando(false); setCodigo(""); }
   }
 
   return (
@@ -102,86 +62,47 @@ function Autenticacao() {
       <div className="text-center">
         <p className="text-[11px] uppercase tracking-[0.3em] text-gold">Acesso</p>
         <h1 className="mt-2 font-serif text-4xl text-foreground">NEXUS</h1>
-        <p className="mt-2 text-sm text-mist">
-          {modo === "entrar"
-            ? "Entre para gerenciar o inventário e a certificação."
-            : "Crie sua conta de acesso ao sistema."}
-        </p>
+        <p className="mt-2 text-sm text-mist">Digite o código de 6 números do Google Authenticator.</p>
       </div>
 
       <div className="mt-8 rounded-xl border border-line bg-panel p-6">
-        <button
-          type="button"
-          onClick={entrarComGoogle}
-          className="flex w-full items-center justify-center gap-2 rounded-md border border-line bg-panel-2 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-panel-2/70"
-        >
-          Continuar com Google
-        </button>
-
-        <div className="my-5 flex items-center gap-3">
-          <span className="h-px flex-1 bg-line" />
-          <span className="text-[10px] uppercase tracking-[0.2em] text-mist">ou</span>
-          <span className="h-px flex-1 bg-line" />
-        </div>
+        {segredo ? (
+          <div className="mb-6 space-y-3 text-center">
+            <p className="text-xs text-mist">
+              Primeira configuração: abra o Google Authenticator, toque em “+” e escaneie o QR code.
+              Ele só aparece até o primeiro acesso.
+            </p>
+            {qr ? <img src={qr} alt="QR code para o Google Authenticator" className="mx-auto rounded-md bg-foreground p-2" /> : null}
+            <p className="break-all font-mono text-[11px] text-mist">Chave manual: {segredo}</p>
+          </div>
+        ) : null}
 
         <form onSubmit={enviar} className="space-y-4">
-          {modo === "criar" ? (
-            <Campo rotulo="Nome">
-              <input
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                placeholder="Seu nome"
-                className="h-9 w-full rounded-md border border-line bg-panel-2 px-3 text-sm text-foreground"
-              />
-            </Campo>
-          ) : null}
-          <Campo rotulo="E-mail">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              placeholder="voce@exemplo.com"
-              className="h-9 w-full rounded-md border border-line bg-panel-2 px-3 text-sm text-foreground"
-            />
-          </Campo>
-          <Campo rotulo="Senha">
-            <input
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              autoComplete={modo === "criar" ? "new-password" : "current-password"}
-              placeholder="••••••••"
-              className="h-9 w-full rounded-md border border-line bg-panel-2 px-3 text-sm text-foreground"
-            />
-          </Campo>
-
+          <label htmlFor="codigo" className="label-eyebrow block">Código de acesso</label>
+          <input
+            id="codigo"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
+            placeholder="000000"
+            className="h-12 w-full rounded-md border border-line bg-panel-2 px-3 text-center font-mono text-2xl tracking-[0.5em] text-foreground"
+          />
+          <div className="h-1 w-full overflow-hidden rounded bg-panel-2">
+            <div className="h-full bg-gold transition-all" style={{ width: `${(restante / 30) * 100}%` }} />
+          </div>
+          <p className="text-center text-[11px] text-mist">Nova chave em {restante}s</p>
           {aviso ? <p className="text-xs text-fail">{aviso}</p> : null}
-
           <button
             type="submit"
             disabled={enviando}
             className="w-full rounded-full bg-gold px-4 py-2.5 text-sm font-semibold text-gold-foreground transition-colors hover:bg-gold/90 disabled:opacity-60"
           >
-            {enviando ? "Aguarde…" : modo === "entrar" ? "Entrar" : "Criar conta"}
+            {enviando ? "Validando…" : "Entrar"}
           </button>
         </form>
-
-        <p className="mt-5 text-center text-xs text-mist">
-          {modo === "entrar" ? "Ainda não tem conta?" : "Já possui conta?"}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setModo(modo === "entrar" ? "criar" : "entrar");
-              setAviso("");
-            }}
-            className="font-semibold text-gold hover:underline"
-          >
-            {modo === "entrar" ? "Criar conta" : "Entrar"}
-          </button>
-        </p>
       </div>
-
     </div>
   );
 }
