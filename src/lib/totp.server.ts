@@ -12,12 +12,12 @@ function base32(bytes: Uint8Array) {
 }
 
 async function hmac(alg: "SHA-1" | "SHA-256", key: Uint8Array, data: Uint8Array) {
-  const k = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: alg }, false, ["sign"]);
-  return new Uint8Array(await crypto.subtle.sign("HMAC", k, data));
+  const k = await crypto.subtle.importKey("raw", key as BufferSource, { name: "HMAC", hash: alg }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", k, data as BufferSource));
 }
 
 function chaveServidor() {
-  const s = process.env.SESSION_SECRET;
+  const s = process.env["SESSION_SECRET"];
   if (!s) throw new Error("SESSION_SECRET ausente");
   return enc.encode(s);
 }
@@ -35,8 +35,8 @@ async function codigoEm(contador: number) {
   let c = contador;
   for (let i = 7; i >= 0; i--) { buf[i] = c & 0xff; c = Math.floor(c / 256); }
   const h = await hmac("SHA-1", await segredoTotp(), buf);
-  const o = h[19] & 0xf;
-  const n = ((h[o] & 0x7f) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3];
+  const o = h[19]! & 0xf; const g = (i: number) => h[o + i]!;
+  const n = ((g(0) & 0x7f) << 24) | (g(1) << 16) | (g(2) << 8) | g(3);
   return String(n % 1_000_000).padStart(6, "0");
 }
 
