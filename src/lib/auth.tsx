@@ -9,6 +9,10 @@ export function salvarToken(token: string) {
   window.dispatchEvent(new Event(EVENTO));
 }
 
+export function lerToken() {
+  return localStorage.getItem(KEY);
+}
+
 export function useSessao() {
   const [usuario, setUsuario] = useState<{ nome: string } | null>(null);
   const [carregando, setCarregando] = useState(true);
