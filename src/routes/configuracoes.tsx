@@ -22,6 +22,7 @@ import {
 } from "@/components/ui-sistema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PainelAcesso } from "@/components/PainelAcesso";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
@@ -353,6 +354,8 @@ function Configuracoes() {
           </div>
         )}
       </Painel>
+
+      <PainelAcesso />
     </>
   );
 }
