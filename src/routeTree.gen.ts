@@ -17,6 +17,7 @@ import { Route as EtiquetasRouteImport } from './routes/etiquetas'
 import { Route as HistoricoRouteImport } from './routes/historico'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as PatchPanelsRouteImport } from './routes/patch-panels'
+import { Route as SalasRacksRouteImport } from './routes/salas-racks'
 import { Route as SwitchesRouteImport } from './routes/switches'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +60,11 @@ const PatchPanelsRoute = PatchPanelsRouteImport.update({
   path: '/patch-panels',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SalasRacksRoute = SalasRacksRouteImport.update({
+  id: '/salas-racks',
+  path: '/salas-racks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SwitchesRoute = SwitchesRouteImport.update({
   id: '/switches',
   path: '/switches',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/historico': typeof HistoricoRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
+  '/salas-racks': typeof SalasRacksRoute
   '/switches': typeof SwitchesRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/historico': typeof HistoricoRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
+  '/salas-racks': typeof SalasRacksRoute
   '/switches': typeof SwitchesRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/historico': typeof HistoricoRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
+  '/salas-racks': typeof SalasRacksRoute
   '/switches': typeof SwitchesRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/inventario'
     | '/patch-panels'
+    | '/salas-racks'
     | '/switches'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/inventario'
     | '/patch-panels'
+    | '/salas-racks'
     | '/switches'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/inventario'
     | '/patch-panels'
+    | '/salas-racks'
     | '/switches'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   HistoricoRoute: typeof HistoricoRoute
   InventarioRoute: typeof InventarioRoute
   PatchPanelsRoute: typeof PatchPanelsRoute
+  SalasRacksRoute: typeof SalasRacksRoute
   SwitchesRoute: typeof SwitchesRoute
 }
 
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatchPanelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/salas-racks': {
+      id: '/salas-racks'
+      path: '/salas-racks'
+      fullPath: '/salas-racks'
+      preLoaderRoute: typeof SalasRacksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/switches': {
       id: '/switches'
       path: '/switches'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoricoRoute: HistoricoRoute,
   InventarioRoute: InventarioRoute,
   PatchPanelsRoute: PatchPanelsRoute,
+  SalasRacksRoute: SalasRacksRoute,
   SwitchesRoute: SwitchesRoute,
 }
 export const routeTree = rootRouteImport
