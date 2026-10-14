@@ -11,6 +11,7 @@ import {
   ClipboardList,
   Settings,
   Menu,
+  Server,
 } from "lucide-react";
 import { useState } from "react";
 import { useLimites } from "@/lib/dados";
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 const ITENS = [
   { to: "/", rotulo: "Dashboard", Icone: LayoutDashboard },
   { to: "/inventario", rotulo: "Inventário", Icone: Cable },
+  { to: "/salas-racks", rotulo: "Salas & Racks", Icone: Server },
   { to: "/patch-panels", rotulo: "Patch Panels", Icone: LayoutGrid },
   { to: "/switches", rotulo: "Switches", Icone: Network },
   { to: "/etiquetas", rotulo: "Etiquetas", Icone: Tag },
