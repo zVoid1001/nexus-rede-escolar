@@ -35,11 +35,3 @@ export const validarSessao = createServerFn({ method: "POST" })
     return { valido: await tokenValido(data.token) };
   });
 
-// Mostra a chave de novo, mas só para quem já está com a sessão válida.
-export const revelarAcesso = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ token: z.string().max(2000) }).parse(d))
-  .handler(async ({ data }) => {
-    const { tokenValido, segredoBase32 } = await import("./totp.server");
-    if (!(await tokenValido(data.token))) return { ok: false as const, segredo: null };
-    return { ok: true as const, segredo: await segredoBase32() };
-  });
