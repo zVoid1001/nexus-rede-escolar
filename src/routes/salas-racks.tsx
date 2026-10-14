@@ -63,11 +63,11 @@ function SalasRacks() {
 
   async function salvarSala() {
     const nome = sala.nome.trim();
-    if (!nome) return toast.error("Informe o nome da sala.");
+    if (!nome) { toast.error("Informe o nome da sala."); return; }
     if (salas.data?.some((s) => s.nome.toLowerCase() === nome.toLowerCase()))
-      return toast.error("Já existe uma sala com esse nome.");
+      { toast.error("Já existe uma sala com esse nome."); return; }
     const { error } = await db.from("salas").insert({ nome, andar: sala.andar.trim() || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Sala cadastrada.");
     setSala({ nome: "", andar: "" });
     atualizar();
@@ -76,25 +76,25 @@ function SalasRacks() {
   async function salvarRack() {
     const identificacao = rack.identificacao.trim();
     const u = Number(rack.altura_u);
-    if (!identificacao) return toast.error("Informe a identificação do rack.");
-    if (!Number.isInteger(u) || u < 1 || u > 60) return toast.error("Altura deve ser entre 1 e 60U.");
+    if (!identificacao) { toast.error("Informe a identificação do rack."); return; }
+    if (!Number.isInteger(u) || u < 1 || u > 60) { toast.error("Altura deve ser entre 1 e 60U."); return; }
     if (racks.data?.some((r) => r.identificacao.toLowerCase() === identificacao.toLowerCase()))
-      return toast.error("Já existe um rack com essa identificação.");
+      { toast.error("Já existe um rack com essa identificação."); return; }
     const { error } = await db
       .from("racks")
       .insert({ identificacao, sala_id: rack.sala_id || null, altura_u: u });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Rack cadastrado.");
     setRack({ identificacao: "", sala_id: "", altura_u: "42" });
     atualizar();
   }
 
   async function vincular() {
-    if (!equip.item) return toast.error("Escolha um equipamento.");
+    if (!equip.item) { toast.error("Escolha um equipamento."); return; }
     const [tipo, id] = equip.item.split(":");
     const tabela = tipo === "pp" ? "patch_panels" : "switches";
     const { error } = await db.from(tabela).update({ rack_id: equip.rack_id || null }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(equip.rack_id ? "Equipamento instalado no rack." : "Equipamento removido do rack.");
     setEquip({ item: "", rack_id: "" });
     atualizar();
@@ -103,7 +103,7 @@ function SalasRacks() {
   async function excluir(tabela: "salas" | "racks", id: string, nome: string) {
     if (!confirm(`Excluir "${nome}"? Os itens vinculados ficarão sem ${tabela === "salas" ? "sala" : "rack"}.`)) return;
     const { error } = await db.from(tabela).delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Excluído.");
     atualizar();
   }
