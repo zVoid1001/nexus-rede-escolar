@@ -92,6 +92,7 @@ export type Database = {
           numero: string | null
           numero_portas: number
           observacoes: string | null
+          rack_id: string | null
         }
         Insert: {
           created_at?: string
@@ -101,6 +102,7 @@ export type Database = {
           numero?: string | null
           numero_portas?: number
           observacoes?: string | null
+          rack_id?: string | null
         }
         Update: {
           created_at?: string
@@ -110,8 +112,17 @@ export type Database = {
           numero?: string | null
           numero_portas?: number
           observacoes?: string | null
+          rack_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "patch_panels_rack_id_fkey"
+            columns: ["rack_id"]
+            isOneToOne: false
+            referencedRelation: "racks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pontos_rede: {
         Row: {
@@ -188,6 +199,65 @@ export type Database = {
         }
         Relationships: []
       }
+      racks: {
+        Row: {
+          altura_u: number
+          created_at: string
+          id: string
+          identificacao: string
+          observacoes: string | null
+          sala_id: string | null
+        }
+        Insert: {
+          altura_u?: number
+          created_at?: string
+          id?: string
+          identificacao: string
+          observacoes?: string | null
+          sala_id?: string | null
+        }
+        Update: {
+          altura_u?: number
+          created_at?: string
+          id?: string
+          identificacao?: string
+          observacoes?: string | null
+          sala_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "racks_sala_id_fkey"
+            columns: ["sala_id"]
+            isOneToOne: false
+            referencedRelation: "salas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      salas: {
+        Row: {
+          andar: string | null
+          created_at: string
+          id: string
+          nome: string
+          observacoes: string | null
+        }
+        Insert: {
+          andar?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          observacoes?: string | null
+        }
+        Update: {
+          andar?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          observacoes?: string | null
+        }
+        Relationships: []
+      }
       switches: {
         Row: {
           created_at: string
@@ -198,6 +268,7 @@ export type Database = {
           numero: string | null
           numero_portas: number
           observacoes: string | null
+          rack_id: string | null
         }
         Insert: {
           created_at?: string
@@ -208,6 +279,7 @@ export type Database = {
           numero?: string | null
           numero_portas?: number
           observacoes?: string | null
+          rack_id?: string | null
         }
         Update: {
           created_at?: string
@@ -218,8 +290,17 @@ export type Database = {
           numero?: string | null
           numero_portas?: number
           observacoes?: string | null
+          rack_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "switches_rack_id_fkey"
+            columns: ["rack_id"]
+            isOneToOne: false
+            referencedRelation: "racks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       testes_certificacao: {
         Row: {
