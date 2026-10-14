@@ -70,7 +70,7 @@ function Autenticacao() {
           <div className="mb-6 space-y-3 text-center">
             <p className="text-xs text-mist">
               Primeira configuração: abra o Google Authenticator, toque em “+” e escaneie o QR code.
-              Ele só aparece até o primeiro acesso.
+              Ele aparece só uma vez: depois do primeiro acesso, some para sempre.
             </p>
             {qr ? <img src={qr} alt="QR code para o Google Authenticator" className="mx-auto rounded-md bg-foreground p-2" /> : null}
             <p className="break-all font-mono text-[11px] text-mist">Chave manual: {segredo}</p>
