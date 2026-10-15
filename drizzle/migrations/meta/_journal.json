@@ -15,6 +15,13 @@
       "when": 1792004689412,
       "tag": "0001_salas_racks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792025694910,
+      "tag": "0002_infraestrutura_cronologica",
+      "breakpoints": true
     }
   ]
 }
