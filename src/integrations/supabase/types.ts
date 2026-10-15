@@ -85,6 +85,7 @@ export type Database = {
       }
       patch_panels: {
         Row: {
+          categoria_cabo: string | null
           created_at: string
           id: string
           identificacao: string
@@ -95,6 +96,7 @@ export type Database = {
           rack_id: string | null
         }
         Insert: {
+          categoria_cabo?: string | null
           created_at?: string
           id?: string
           identificacao: string
@@ -105,6 +107,7 @@ export type Database = {
           rack_id?: string | null
         }
         Update: {
+          categoria_cabo?: string | null
           created_at?: string
           id?: string
           identificacao?: string
@@ -131,10 +134,13 @@ export type Database = {
           id: string
           identificacao: string
           localizacao: string | null
+          nome: string | null
           observacoes: string | null
           patch_panel_id: string | null
           porta_patch_panel: number | null
           porta_switch: number | null
+          sala_id: string | null
+          status: string
           switch_id: string | null
         }
         Insert: {
@@ -143,10 +149,13 @@ export type Database = {
           id?: string
           identificacao: string
           localizacao?: string | null
+          nome?: string | null
           observacoes?: string | null
           patch_panel_id?: string | null
           porta_patch_panel?: number | null
           porta_switch?: number | null
+          sala_id?: string | null
+          status?: string
           switch_id?: string | null
         }
         Update: {
@@ -155,10 +164,13 @@ export type Database = {
           id?: string
           identificacao?: string
           localizacao?: string | null
+          nome?: string | null
           observacoes?: string | null
           patch_panel_id?: string | null
           porta_patch_panel?: number | null
           porta_switch?: number | null
+          sala_id?: string | null
+          status?: string
           switch_id?: string | null
         }
         Relationships: [
@@ -167,6 +179,13 @@ export type Database = {
             columns: ["patch_panel_id"]
             isOneToOne: false
             referencedRelation: "patch_panels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pontos_rede_sala_id_fkey"
+            columns: ["sala_id"]
+            isOneToOne: false
+            referencedRelation: "salas"
             referencedColumns: ["id"]
           },
           {
@@ -205,6 +224,7 @@ export type Database = {
           created_at: string
           id: string
           identificacao: string
+          localizacao: string | null
           observacoes: string | null
           sala_id: string | null
         }
@@ -213,6 +233,7 @@ export type Database = {
           created_at?: string
           id?: string
           identificacao: string
+          localizacao?: string | null
           observacoes?: string | null
           sala_id?: string | null
         }
@@ -221,6 +242,7 @@ export type Database = {
           created_at?: string
           id?: string
           identificacao?: string
+          localizacao?: string | null
           observacoes?: string | null
           sala_id?: string | null
         }
@@ -237,6 +259,7 @@ export type Database = {
       salas: {
         Row: {
           andar: string | null
+          codigo: string | null
           created_at: string
           id: string
           nome: string
@@ -244,6 +267,7 @@ export type Database = {
         }
         Insert: {
           andar?: string | null
+          codigo?: string | null
           created_at?: string
           id?: string
           nome: string
@@ -251,6 +275,7 @@ export type Database = {
         }
         Update: {
           andar?: string | null
+          codigo?: string | null
           created_at?: string
           id?: string
           nome?: string
@@ -261,6 +286,7 @@ export type Database = {
       switches: {
         Row: {
           created_at: string
+          fabricante: string | null
           id: string
           identificacao: string
           localizacao: string | null
@@ -272,6 +298,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          fabricante?: string | null
           id?: string
           identificacao: string
           localizacao?: string | null
@@ -283,6 +310,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          fabricante?: string | null
           id?: string
           identificacao?: string
           localizacao?: string | null
