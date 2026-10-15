@@ -15,6 +15,7 @@ import { Route as CertificacaoRouteImport } from './routes/certificacao'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EtiquetasRouteImport } from './routes/etiquetas'
 import { Route as HistoricoRouteImport } from './routes/historico'
+import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
 import { Route as InventarioRouteImport } from './routes/inventario'
 import { Route as PatchPanelsRouteImport } from './routes/patch-panels'
 import { Route as SalasRacksRouteImport } from './routes/salas-racks'
@@ -50,6 +51,11 @@ const HistoricoRoute = HistoricoRouteImport.update({
   path: '/historico',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InfraestruturaRoute = InfraestruturaRouteImport.update({
+  id: '/infraestrutura',
+  path: '/infraestrutura',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventarioRoute = InventarioRouteImport.update({
   id: '/inventario',
   path: '/inventario',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes': typeof ConfiguracoesRoute
   '/etiquetas': typeof EtiquetasRoute
   '/historico': typeof HistoricoRoute
+  '/infraestrutura': typeof InfraestruturaRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
   '/salas-racks': typeof SalasRacksRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof ConfiguracoesRoute
   '/etiquetas': typeof EtiquetasRoute
   '/historico': typeof HistoricoRoute
+  '/infraestrutura': typeof InfraestruturaRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
   '/salas-racks': typeof SalasRacksRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/configuracoes': typeof ConfiguracoesRoute
   '/etiquetas': typeof EtiquetasRoute
   '/historico': typeof HistoricoRoute
+  '/infraestrutura': typeof InfraestruturaRoute
   '/inventario': typeof InventarioRoute
   '/patch-panels': typeof PatchPanelsRoute
   '/salas-racks': typeof SalasRacksRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/etiquetas'
     | '/historico'
+    | '/infraestrutura'
     | '/inventario'
     | '/patch-panels'
     | '/salas-racks'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/etiquetas'
     | '/historico'
+    | '/infraestrutura'
     | '/inventario'
     | '/patch-panels'
     | '/salas-racks'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/etiquetas'
     | '/historico'
+    | '/infraestrutura'
     | '/inventario'
     | '/patch-panels'
     | '/salas-racks'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   EtiquetasRoute: typeof EtiquetasRoute
   HistoricoRoute: typeof HistoricoRoute
+  InfraestruturaRoute: typeof InfraestruturaRoute
   InventarioRoute: typeof InventarioRoute
   PatchPanelsRoute: typeof PatchPanelsRoute
   SalasRacksRoute: typeof SalasRacksRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoricoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/infraestrutura': {
+      id: '/infraestrutura'
+      path: '/infraestrutura'
+      fullPath: '/infraestrutura'
+      preLoaderRoute: typeof InfraestruturaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventario': {
       id: '/inventario'
       path: '/inventario'
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfiguracoesRoute: ConfiguracoesRoute,
   EtiquetasRoute: EtiquetasRoute,
   HistoricoRoute: HistoricoRoute,
+  InfraestruturaRoute: InfraestruturaRoute,
   InventarioRoute: InventarioRoute,
   PatchPanelsRoute: PatchPanelsRoute,
   SalasRacksRoute: SalasRacksRoute,
