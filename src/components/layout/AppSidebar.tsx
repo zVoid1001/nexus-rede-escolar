@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 const ITENS = [
   { to: "/", rotulo: "Dashboard", Icone: LayoutDashboard },
   { to: "/inventario", rotulo: "Inventário", Icone: Cable },
+  { to: "/infraestrutura", rotulo: "Infraestrutura", Icone: Server },
   { to: "/salas-racks", rotulo: "Salas & Racks", Icone: Server },
   { to: "/patch-panels", rotulo: "Patch Panels", Icone: LayoutGrid },
   { to: "/switches", rotulo: "Switches", Icone: Network },

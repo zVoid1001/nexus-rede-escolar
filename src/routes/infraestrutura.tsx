@@ -129,15 +129,15 @@ function EtapaSalas({ salas, racks, pontos, salaId, setSalaId, executar }: { sal
   const [f, setF] = useState(vazio);
   async function salvar() {
     const nome = f.nome.trim(), codigo = f.codigo.trim().toUpperCase();
-    if (!nome || !codigo) return toast.error("Informe nome e identificação da sala.");
-    if (salas.some((s) => s.id !== f.id && s.codigo?.toLowerCase() === codigo.toLowerCase())) return toast.error("Já existe uma sala com essa identificação.");
+    if (!nome || !codigo) { toast.error("Informe nome e identificação da sala."); return; }
+    if (salas.some((s) => s.id !== f.id && s.codigo?.toLowerCase() === codigo.toLowerCase())) { toast.error("Já existe uma sala com essa identificação."); return; }
     const payload = { nome, codigo, observacoes: f.descricao.trim() || null };
     const ok = await executar(f.id ? db.from("salas").update(payload).eq("id", f.id) : db.from("salas").insert(payload), f.id ? "Sala atualizada." : "Sala cadastrada.");
     if (ok) setF(vazio);
   }
   async function excluir(s: Sala) {
     const nr = racks.filter((r) => r.sala_id === s.id).length, np = pontos.filter((p) => p.sala_id === s.id).length;
-    if (nr || np) return toast.error(`A sala possui ${np} ponto(s) e ${nr} rack(s). Remova-os antes de excluir.`);
+    if (nr || np) { toast.error(`A sala possui ${np} ponto(s) e ${nr} rack(s). Remova-os antes de excluir.`); return; }
     if (!confirm(`Excluir a sala ${s.codigo ?? s.nome}?`)) return;
     if (await executar(db.from("salas").delete().eq("id", s.id), "Sala excluída.") && salaId === s.id) setSalaId("");
   }
@@ -175,13 +175,13 @@ function EtapaPontos({ sala, pontos, categorias, executar }: { sala: Sala; ponto
   const [f, setF] = useState(vazio);
   async function salvar() {
     const codigo = f.codigo.trim().toUpperCase();
-    if (!codigo) return toast.error("Informe o código do ponto (ex.: LAB01-P01).");
+    if (!codigo) { toast.error("Informe o código do ponto (ex.: LAB01-P01)."); return; }
     const payload = { identificacao: codigo, nome: f.nome.trim() || null, sala_id: sala.id, localizacao: f.localizacao.trim() || null, status: f.status, categoria_cabo: f.categoria || "Cat6", observacoes: f.obs.trim() || null };
     if (await executar(f.id ? db.from("pontos_rede").update(payload).eq("id", f.id) : db.from("pontos_rede").insert(payload), f.id ? "Ponto atualizado." : "Ponto de rede adicionado.")) setF(vazio);
   }
   async function excluir(p: Ponto) {
     const { count } = await db.from("testes_certificacao").select("id", { count: "exact", head: true }).eq("ponto_rede_id", p.id);
-    if (count) return toast.error(`O ponto tem ${count} teste(s) de certificação registrados e não pode ser excluído.`);
+    if (count) { toast.error(`O ponto tem ${count} teste(s) de certificação registrados e não pode ser excluído.`); return; }
     if (!confirm(`Excluir o ponto ${p.identificacao}? A conexão física dele também será removida.`)) return;
     await executar(db.from("pontos_rede").delete().eq("id", p.id), "Ponto excluído.");
   }
@@ -219,13 +219,13 @@ function EtapaRacks({ sala, racks, sws, pps, rackId, setRackId, executar }: { sa
   const [f, setF] = useState(vazio);
   async function salvar() {
     const identificacao = f.nome.trim().toUpperCase();
-    if (!identificacao) return toast.error("Informe a identificação do rack (ex.: RACK01).");
+    if (!identificacao) { toast.error("Informe a identificação do rack (ex.: RACK01)."); return; }
     const payload = { identificacao, sala_id: sala.id, localizacao: f.localizacao.trim() || null, observacoes: f.descricao.trim() || null };
     if (await executar(f.id ? db.from("racks").update(payload).eq("id", f.id) : db.from("racks").insert(payload), f.id ? "Rack atualizado." : "Rack criado.")) setF(vazio);
   }
   async function excluir(r: Rack) {
     const n = sws.filter((s) => s.rack_id === r.id).length + pps.filter((p) => p.rack_id === r.id).length;
-    if (n) return toast.error(`O rack possui ${n} equipamento(s). Remova-os antes de excluir.`);
+    if (n) { toast.error(`O rack possui ${n} equipamento(s). Remova-os antes de excluir.`); return; }
     if (!confirm(`Excluir o rack ${r.identificacao}?`)) return;
     if (await executar(db.from("racks").delete().eq("id", r.id), "Rack excluído.") && rackId === r.id) setRackId("");
   }
@@ -280,16 +280,16 @@ function EtapaEquipamentos({ rack, racks, setRackId, sws, pps, pontos, categoria
   async function addSw() {
     if (!exigirRack()) return;
     const n = portasOk(sw.portas);
-    if (!sw.nome.trim()) return toast.error("Informe a identificação do switch.");
-    if (!n) return toast.error("Quantidade de portas deve ser entre 1 e 96.");
+    if (!sw.nome.trim()) { toast.error("Informe a identificação do switch."); return; }
+    if (!n) { toast.error("Quantidade de portas deve ser entre 1 e 96."); return; }
     if (await executar(db.from("switches").insert({ identificacao: sw.nome.trim().toUpperCase(), rack_id: rack!.id, fabricante: sw.fabricante.trim() || null, modelo: sw.modelo.trim() || null, numero_portas: n, observacoes: sw.descricao.trim() || null }), "Switch adicionado."))
       setSw({ nome: "", fabricante: "", modelo: "", portas: "24", descricao: "" });
   }
   async function addPp() {
     if (!exigirRack()) return;
     const n = portasOk(pp.portas);
-    if (!pp.nome.trim()) return toast.error("Informe a identificação do patch panel.");
-    if (!n) return toast.error("Quantidade de portas deve ser entre 1 e 96.");
+    if (!pp.nome.trim()) { toast.error("Informe a identificação do patch panel."); return; }
+    if (!n) { toast.error("Quantidade de portas deve ser entre 1 e 96."); return; }
     if (await executar(db.from("patch_panels").insert({ identificacao: pp.nome.trim().toUpperCase(), rack_id: rack!.id, numero_portas: n, categoria_cabo: pp.categoria || null, observacoes: pp.descricao.trim() || null }), "Patch panel adicionado."))
       setPp({ nome: "", portas: "24", categoria: "", descricao: "" });
   }
@@ -300,7 +300,7 @@ function EtapaEquipamentos({ rack, racks, setRackId, sws, pps, pontos, categoria
     if (n) {
       const limpar = tabela === "switches" ? { switch_id: null, porta_switch: null } : { patch_panel_id: null, porta_patch_panel: null };
       const { error } = await db.from("pontos_rede").update(limpar).eq(campo, e.id);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
     }
     await executar(db.from(tabela).delete().eq("id", e.id), "Equipamento excluído.");
   }
@@ -384,9 +384,9 @@ function EtapaConexoes({ sala, pontos, racks, sws, pps, todos, executar }: { sal
   const conectados = pontos.filter((p) => p.patch_panel_id && p.switch_id);
 
   async function registrar() {
-    if (!f.ponto || !f.rack || !f.pp || !f.portaPp || !f.sw || !f.portaSw) return toast.error("Selecione ponto, rack, patch panel, porta, switch e porta.");
+    if (!f.ponto || !f.rack || !f.pp || !f.portaPp || !f.sw || !f.portaSw) { toast.error("Selecione ponto, rack, patch panel, porta, switch e porta."); return; }
     const rk = racks.find((r) => r.id === f.rack);
-    if (!rk || rk.sala_id !== sala.id) return toast.error("O rack precisa pertencer à mesma sala do ponto.");
+    if (!rk || rk.sala_id !== sala.id) { toast.error("O rack precisa pertencer à mesma sala do ponto."); return; }
     if (await executar(db.from("pontos_rede").update({ patch_panel_id: f.pp, porta_patch_panel: Number(f.portaPp), switch_id: f.sw, porta_switch: Number(f.portaSw) }).eq("id", f.ponto), "Conexão registrada."))
       setF({ ponto: "", rack: f.rack, pp: "", portaPp: "", sw: "", portaSw: "" });
   }
