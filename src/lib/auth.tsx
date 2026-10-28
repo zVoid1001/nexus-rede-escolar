@@ -35,7 +35,7 @@ export function useSessao() {
       if (!ativo) return;
       const e: Etapa = !user ? "login" : totpOk ? "ok" : "verificacao";
       setEtapa(e);
-      setUsuario(e === "ok" && user ? { nome: (user.user_metadata?.nome as string) || user.email || "Usuário", email: user.email ?? "" } : null);
+      setUsuario(e === "ok" && user ? { nome: (user.user_metadata?.["nome"] as string) || user.email || "Usuário", email: user.email ?? "" } : null);
       setCarregando(false);
     }
     checar();
