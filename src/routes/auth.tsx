@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
-import { useSessao, salvarToken } from "@/lib/auth";
+import { useSessao, salvarToken, sair } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { statusAcesso, entrarComCodigo } from "@/lib/totp.functions";
 
 export const Route = createFileRoute("/auth")({
@@ -18,6 +19,68 @@ export const Route = createFileRoute("/auth")({
 });
 
 function Autenticacao() {
+  const { etapa, carregando } = useSessao();
+  if (carregando) return <p className="text-sm text-mist">Carregando…</p>;
+  return etapa === "login" ? <LoginEmail /> : <Verificacao />;
+}
+
+function LoginEmail() {
+  const [modo, setModo] = useState<"entrar" | "criar">("entrar");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [aviso, setAviso] = useState("");
+  const [enviando, setEnviando] = useState(false);
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || senha.length < 6) { setAviso("Informe o e-mail e uma senha com pelo menos 6 caracteres."); return; }
+    setAviso(""); setEnviando(true);
+    try {
+      if (modo === "entrar") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+        if (error) setAviso(error.message.includes("confirm") ? "Confirme seu e-mail antes de entrar." : "E-mail ou senha incorretos.");
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email, password: senha,
+          options: { emailRedirectTo: window.location.origin + "/auth", data: { nome } },
+        });
+        if (error) setAviso(error.message);
+        else if (!data.session) { toast.success("Conta criada! Confirme pelo link enviado ao seu e-mail."); setModo("entrar"); }
+      }
+    } finally { setEnviando(false); }
+  }
+
+  const campo = "h-11 w-full rounded-md border border-line bg-panel-2 px-3 text-sm text-foreground";
+  return (
+    <div className="mx-auto w-full max-w-md py-6">
+      <div className="text-center">
+        <p className="text-[11px] uppercase tracking-[0.3em] text-gold">Etapa 1 de 2 · Login</p>
+        <h1 className="mt-2 font-serif text-4xl text-foreground">NEXUS</h1>
+        <p className="mt-2 text-sm text-mist">{modo === "entrar" ? "Entre com seu e-mail e senha." : "Crie sua conta."}</p>
+      </div>
+      <form onSubmit={enviar} className="mt-8 space-y-4 rounded-xl border border-line bg-panel p-6">
+        {modo === "criar" ? (
+          <div><label htmlFor="nome" className="label-eyebrow block">Nome</label>
+            <input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} className={campo} /></div>
+        ) : null}
+        <div><label htmlFor="email" className="label-eyebrow block">E-mail</label>
+          <input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={campo} /></div>
+        <div><label htmlFor="senha" className="label-eyebrow block">Senha</label>
+          <input id="senha" type="password" autoComplete={modo === "entrar" ? "current-password" : "new-password"} value={senha} onChange={(e) => setSenha(e.target.value)} className={campo} /></div>
+        {aviso ? <p className="text-xs text-fail">{aviso}</p> : null}
+        <button type="submit" disabled={enviando} className="w-full rounded-full bg-gold px-4 py-2.5 text-sm font-semibold text-gold-foreground transition-colors hover:bg-gold/90 disabled:opacity-60">
+          {enviando ? "Aguarde…" : modo === "entrar" ? "Continuar" : "Criar conta"}
+        </button>
+        <button type="button" onClick={() => { setModo(modo === "entrar" ? "criar" : "entrar"); setAviso(""); }} className="w-full text-center text-xs text-mist hover:text-foreground">
+          {modo === "entrar" ? "Não tem conta? Criar conta" : "Já tem conta? Entrar"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function Verificacao() {
   const navigate = useNavigate();
   const { sessao, carregando } = useSessao();
   const [codigo, setCodigo] = useState("");
@@ -60,9 +123,10 @@ function Autenticacao() {
   return (
     <div className="mx-auto w-full max-w-md py-6">
       <div className="text-center">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-gold">Acesso</p>
+        <p className="text-[11px] uppercase tracking-[0.3em] text-gold">Etapa 2 de 2 · Verificação</p>
         <h1 className="mt-2 font-serif text-4xl text-foreground">NEXUS</h1>
         <p className="mt-2 text-sm text-mist">Digite o código de 6 números do Google Authenticator.</p>
+        <button type="button" onClick={() => sair()} className="mt-2 text-xs text-mist underline hover:text-foreground">Usar outra conta</button>
       </div>
 
       <div className="mt-8 rounded-xl border border-line bg-panel p-6">
