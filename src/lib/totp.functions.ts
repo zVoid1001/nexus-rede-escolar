@@ -4,8 +4,12 @@ import { z } from "zod";
 const CHAVE = "totp_configurado";
 
 async function configurado() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await (supabaseAdmin as any).from("configuracoes").select("valor").eq("chave", CHAVE).maybeSingle();
+  const { createPublicClient } = await import("./supabase-public.server");
+  const { data } = await (createPublicClient() as any)
+    .from("configuracoes")
+    .select("valor")
+    .eq("chave", CHAVE)
+    .maybeSingle();
   return data?.valor === "sim";
 }
 
