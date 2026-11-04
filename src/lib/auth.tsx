@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { validarSessao } from "@/lib/totp.functions";
-import { supabase } from "@/integrations/supabase/client";
 
 const KEY = "nexus-acesso";
 const EVENTO = "nexus-acesso-mudou";
@@ -14,36 +13,30 @@ export function lerToken() {
   return localStorage.getItem(KEY);
 }
 
-export type Etapa = "login" | "verificacao" | "ok";
+export type Etapa = "verificacao" | "ok";
 
 export function useSessao() {
   const [usuario, setUsuario] = useState<{ nome: string; email: string } | null>(null);
-  const [etapa, setEtapa] = useState<Etapa>("login");
+  const [etapa, setEtapa] = useState<Etapa>("verificacao");
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
     let ativo = true;
     async function checar() {
-      const { data } = await supabase.auth.getUser();
-      const user = data.user;
-      let totpOk = false;
+      let ok = false;
       const token = localStorage.getItem(KEY);
-      if (user && token) {
-        try { totpOk = (await validarSessao({ data: { token } })).valido; } catch { totpOk = false; }
-        if (!totpOk) localStorage.removeItem(KEY);
+      if (token) {
+        try { ok = (await validarSessao({ data: { token } })).valido; } catch { ok = false; }
+        if (!ok) localStorage.removeItem(KEY);
       }
       if (!ativo) return;
-      const e: Etapa = !user ? "login" : totpOk ? "ok" : "verificacao";
-      setEtapa(e);
-      setUsuario(e === "ok" && user ? { nome: (user.user_metadata?.["nome"] as string) || user.email || "Usuário", email: user.email ?? "" } : null);
+      setEtapa(ok ? "ok" : "verificacao");
+      setUsuario(ok ? { nome: "Equipe NEXUS", email: "" } : null);
       setCarregando(false);
     }
     checar();
     window.addEventListener(EVENTO, checar);
-    const { data: sub } = supabase.auth.onAuthStateChange((ev) => {
-      if (ev === "SIGNED_IN" || ev === "SIGNED_OUT" || ev === "USER_UPDATED") checar();
-    });
-    return () => { ativo = false; window.removeEventListener(EVENTO, checar); sub.subscription.unsubscribe(); };
+    return () => { ativo = false; window.removeEventListener(EVENTO, checar); };
   }, []);
 
   return { sessao: usuario, usuario, etapa, carregando };
@@ -55,6 +48,5 @@ export function nomeExibicao(usuario: { nome: string } | null) {
 
 export async function sair() {
   localStorage.removeItem(KEY);
-  await supabase.auth.signOut();
   window.dispatchEvent(new Event(EVENTO));
 }
