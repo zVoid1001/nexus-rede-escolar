@@ -26,8 +26,10 @@ export const entrarComCodigo = createServerFn({ method: "POST" })
     const { verificarCodigo, criarToken } = await import("./totp.server");
     if (!(await verificarCodigo(data.codigo))) return { ok: false as const, token: null };
     if (!(await configurado())) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await (supabaseAdmin as any).from("configuracoes").upsert({ chave: CHAVE, valor: "sim" }, { onConflict: "chave" });
+      const { createPublicClient } = await import("./supabase-public.server");
+      await (createPublicClient() as any)
+        .from("configuracoes")
+        .upsert({ chave: CHAVE, valor: "sim" }, { onConflict: "chave" });
     }
     return { ok: true as const, token: await criarToken() };
   });
