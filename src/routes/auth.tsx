@@ -10,7 +10,7 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Entrar — NEXUS Inventário e Certificação de Rede" },
-      { name: "description", content: "Acesse o NEXUS com o código do Google Authenticator." },
+      { name: "description", content: "Acesse o NEXUS com o código de 6 números do seu aplicativo de autenticação." },
       { property: "og:title", content: "Entrar — NEXUS" },
       { property: "og:description", content: "Acesso ao sistema de inventário e certificação de rede." },
     ],
@@ -125,7 +125,7 @@ function Verificacao() {
       <div className="text-center">
         <p className="text-[11px] uppercase tracking-[0.3em] text-gold">Etapa 2 de 2 · Verificação</p>
         <h1 className="mt-2 font-serif text-4xl text-foreground">NEXUS</h1>
-        <p className="mt-2 text-sm text-mist">Digite o código de 6 números do Google Authenticator.</p>
+        <p className="mt-2 text-sm text-mist">Digite o código de 6 números do seu aplicativo de autenticação.</p>
         <button type="button" onClick={() => sair()} className="mt-2 text-xs text-mist underline hover:text-foreground">Usar outra conta</button>
       </div>
 
@@ -133,10 +133,10 @@ function Verificacao() {
         {segredo ? (
           <div className="mb-6 space-y-3 text-center">
             <p className="text-xs text-mist">
-              Primeira configuração: abra o Google Authenticator, toque em “+” e escaneie o QR code.
+              Primeira configuração: abra o seu aplicativo de autenticação, toque em “+” e escaneie o QR code.
               Ele aparece só uma vez: depois do primeiro acesso, some para sempre.
             </p>
-            {qr ? <img src={qr} alt="QR code para o Google Authenticator" className="mx-auto rounded-md bg-foreground p-2" /> : null}
+            {qr ? <img src={qr} alt="QR code para o aplicativo de autenticação" className="mx-auto rounded-md bg-foreground p-2" /> : null}
             <p className="break-all font-mono text-[11px] text-mist">Chave manual: {segredo}</p>
           </div>
         ) : null}
